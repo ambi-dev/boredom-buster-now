@@ -1,36 +1,48 @@
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ArrowLeft, Bell, Palette, User, Info } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Switch } from '@/components/ui/switch';
+import { Separator } from '@/components/ui/separator';
+import { ArrowLeft, Globe, Volume2, VolumeX, Heart, Sun, Moon, ExternalLink } from 'lucide-react';
 
 interface SettingsProps {
   onBack: () => void;
 }
 
 export function Settings({ onBack }: SettingsProps) {
-  const settingsItems = [
+  const [language, setLanguage] = useState<'fr' | 'en'>('fr');
+  const [soundEnabled, setSoundEnabled] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
+
+  // Initialize dark mode from system preference
+  useEffect(() => {
+    const isDark = document.documentElement.classList.contains('dark');
+    setDarkMode(isDark);
+  }, []);
+
+  const toggleDarkMode = () => {
+    const newDarkMode = !darkMode;
+    setDarkMode(newDarkMode);
+    
+    if (newDarkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  };
+
+  const supportLinks = [
     {
-      icon: User,
-      title: "Profil",
-      description: "Gérer vos informations personnelles",
-      action: () => console.log("Profile clicked")
+      name: 'PayPal',
+      url: 'https://paypal.me/nothing',
+      icon: '💰',
+      color: 'bg-blue-500'
     },
     {
-      icon: Bell,
-      title: "Notifications",
-      description: "Configurer vos préférences de notification",
-      action: () => console.log("Notifications clicked")
-    },
-    {
-      icon: Palette,
-      title: "Apparence",
-      description: "Personnaliser l'interface de l'application",
-      action: () => console.log("Appearance clicked")
-    },
-    {
-      icon: Info,
-      title: "À propos",
-      description: "Informations sur l'application",
-      action: () => console.log("About clicked")
+      name: 'Ko-fi',
+      url: 'https://ko-fi.com/nothing',
+      icon: '☕',
+      color: 'bg-red-500'
     }
   ];
 
@@ -50,44 +62,140 @@ export function Settings({ onBack }: SettingsProps) {
           <h1 className="text-2xl font-bold">Paramètres</h1>
         </div>
 
-        {/* Settings List */}
-        <div className="space-y-3">
-          {settingsItems.map((item, index) => {
-            const Icon = item.icon;
-            
-            return (
-              <Card 
-                key={index}
-                className="bg-card/80 backdrop-blur-sm border-0 shadow-soft cursor-pointer hover:shadow-glow transition-all duration-300"
-                onClick={item.action}
-              >
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-4">
-                    <div className="p-2 rounded-full bg-primary/10">
-                      <Icon className="h-5 w-5 text-primary" />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-medium">{item.title}</h3>
-                      <p className="text-sm text-muted-foreground">
-                        {item.description}
-                      </p>
-                    </div>
-                    <ArrowLeft className="h-4 w-4 text-muted-foreground rotate-180" />
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
+        <div className="space-y-6">
+          {/* Language Settings */}
+          <Card className="bg-card/80 backdrop-blur-sm border-0 shadow-soft">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 rounded-full bg-primary/10">
+                  <Globe className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <h3 className="font-medium">Langue</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Choisir la langue de l'application
+                  </p>
+                </div>
+              </div>
 
-        {/* Footer Info */}
-        <div className="mt-8 text-center">
-          <p className="text-xs text-muted-foreground">
-            Nothing. v1.0.0
-          </p>
-          <p className="text-xs text-muted-foreground mt-1">
-            Conçu pour les moments d'ennui
-          </p>
+              <div className="flex gap-2">
+                <Button
+                  variant={language === 'fr' ? 'gradient' : 'minimal'}
+                  size="sm"
+                  onClick={() => setLanguage('fr')}
+                  className="flex items-center gap-2"
+                >
+                  🇫🇷 Français
+                </Button>
+                <Button
+                  variant={language === 'en' ? 'gradient' : 'minimal'}
+                  size="sm"
+                  onClick={() => setLanguage('en')}
+                  className="flex items-center gap-2"
+                >
+                  🇬🇧 English
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Sound Settings */}
+          <Card className="bg-card/80 backdrop-blur-sm border-0 shadow-soft">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-full bg-primary/10">
+                    {soundEnabled ? 
+                      <Volume2 className="h-5 w-5 text-primary" /> : 
+                      <VolumeX className="h-5 w-5 text-primary" />
+                    }
+                  </div>
+                  <div>
+                    <h3 className="font-medium">Son</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Activer les effets sonores
+                    </p>
+                  </div>
+                </div>
+                <Switch
+                  checked={soundEnabled}
+                  onCheckedChange={setSoundEnabled}
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Theme Settings */}
+          <Card className="bg-card/80 backdrop-blur-sm border-0 shadow-soft">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-full bg-primary/10">
+                    {darkMode ? 
+                      <Moon className="h-5 w-5 text-primary" /> : 
+                      <Sun className="h-5 w-5 text-primary" />
+                    }
+                  </div>
+                  <div>
+                    <h3 className="font-medium">Thème</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Mode {darkMode ? 'sombre' : 'clair'}
+                    </p>
+                  </div>
+                </div>
+                <Switch
+                  checked={darkMode}
+                  onCheckedChange={toggleDarkMode}
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Support Section */}
+          <Card className="bg-card/80 backdrop-blur-sm border-0 shadow-soft">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 rounded-full bg-accent/20">
+                  <Heart className="h-5 w-5 text-accent" />
+                </div>
+                <div>
+                  <h3 className="font-medium">Soutenir Nothing.</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Aidez-nous à améliorer l'application
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                {supportLinks.map((link) => (
+                  <Button
+                    key={link.name}
+                    variant="minimal"
+                    className="w-full justify-between h-12"
+                    onClick={() => window.open(link.url, '_blank')}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="text-lg">{link.icon}</span>
+                      <span>Soutenir sur {link.name}</span>
+                    </div>
+                    <ExternalLink className="h-4 w-4" />
+                  </Button>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Separator className="my-6" />
+
+          {/* Footer Info */}
+          <div className="text-center space-y-2">
+            <p className="text-xs text-muted-foreground">
+              Nothing. v1.0.0
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Conçu pour les moments d'ennui ✨
+            </p>
+          </div>
         </div>
       </div>
     </div>
