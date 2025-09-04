@@ -17,6 +17,17 @@ const questions = [
   "Qu'est-ce qui vous inspire en ce moment ?",
 ];
 
+// Simple toast replacement for problematic dependencies
+const showToast = (message: string) => {
+  const toast = document.createElement('div');
+  toast.className = 'fixed top-4 right-4 bg-primary text-primary-foreground px-4 py-2 rounded-md shadow-lg z-50 animate-fade-in';
+  toast.textContent = message;
+  document.body.appendChild(toast);
+  setTimeout(() => {
+    toast.remove();
+  }, 3000);
+};
+
 const Index = () => {
   const [currentQuestion, setCurrentQuestion] = useState(questions[0]);
   const [showStreakWidget, setShowStreakWidget] = useState(false);
@@ -38,6 +49,7 @@ const Index = () => {
       setScraps(prev => prev + 5);
       setAnswer('');
       getRandomQuestion();
+      showToast('+5 Scraps ! Réponse enregistrée 🎉');
     }
   };
 
